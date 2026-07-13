@@ -1,0 +1,70 @@
+2026-06-28 07:35:39,707 - logger_system - ERROR - Database error during MDT submit: ORA-00942: 表或视图不存在
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+2026-06-28 07:41:09,158 - logger_system - ERROR - Database error during MDT submit: ORA-00942: 表或视图不存在
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+2026-06-28 07:44:22,353 - logger_system - ERROR - Database error during MDT submit: ORA-00942: 表或视图不存在
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+2026-06-28 08:00:48,262 - logger_system - ERROR - Database error during MDT submit: ORA-12899: 列 "SYSTEM"."MDT_CLINICAL_APPLICATION"."APPLICATION_ID" 的值太大 (实际值: 29, 最大值: 20)
+Help: https://docs.oracle.com/error-help/db/ora-12899/
+2026-06-28 09:56:19,701 - logger_system - ERROR - Database error during schedule query: ORA-00904: "SCHEDULE_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 09:56:22,474 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 09:56:24,303 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 09:56:48,109 - logger_system - ERROR - Database error during schedule query: ORA-00904: "SCHEDULE_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:03:33,037 - logger_system - ERROR - Database error during schedule query: ORA-00904: "SCHEDULE_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:03:36,040 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:03:38,804 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:10:12,385 - logger_system - ERROR - Database error during schedule query: ORA-00904: "SCHEDULE_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:10:22,282 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:10:24,313 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:13:49,122 - logger_system - ERROR - Database error during schedule query: ORA-00904: "SCHEDULE_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:13:54,127 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:13:56,394 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:17:30,170 - logger_system - ERROR - Database error during schedule query: ORA-00904: "SCHEDULE_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:17:34,792 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:17:37,257 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:22:03,979 - logger_system - ERROR - Database error during schedule query: ORA-00904: "SCHEDULE_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:22:13,047 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:22:31,687 - logger_system - ERROR - Database error during schedule query: ORA-00904: "SCHEDULE_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:23:56,604 - logger_system - ERROR - Database error during schedule query: ORA-00904: "SCHEDULE_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:23:58,977 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:24:02,769 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:24:44,965 - logger_system - ERROR - Database error during schedule query: ORA-00904: "SCHEDULE_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:30:48,961 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:30:50,897 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:35:01,278 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:35:23,577 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:36:31,141 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:39:23,191 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:41:04,881 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-28 10:41:08,599 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "APPOINTMENT_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/

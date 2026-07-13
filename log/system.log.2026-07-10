@@ -1,0 +1,14 @@
+2026-07-10 08:15:55,738 - system - INFO - 心跳检测线程已启动
+2026-07-10 08:15:55,749 - system - INFO - 已启用客户端证书验证
+2026-07-10 08:20:07,483 - system - INFO - 心跳检测线程已启动
+2026-07-10 08:20:07,487 - system - INFO - 已启用客户端证书验证
+2026-07-10 08:21:26,450 - system - INFO - 心跳检测线程已启动
+2026-07-10 08:21:26,453 - system - INFO - 已启用客户端证书验证
+2026-07-10 08:22:45,573 - system - ERROR - SSL握手失败: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1017)
+2026-07-10 08:30:59,325 - system - ERROR - SSL握手失败: [SSL: SSLV3_ALERT_CERTIFICATE_UNKNOWN] ssl/tls alert certificate unknown (_ssl.c:1017)
+2026-07-10 08:33:39,498 - system - ERROR - SSL握手失败: [SSL: SSLV3_ALERT_CERTIFICATE_UNKNOWN] ssl/tls alert certificate unknown (_ssl.c:1017)
+2026-07-10 08:33:43,052 - system - ERROR - SSL握手失败: [SSL: SSLV3_ALERT_CERTIFICATE_UNKNOWN] ssl/tls alert certificate unknown (_ssl.c:1017)
+2026-07-10 08:42:25,735 - system - INFO - 心跳检测线程已启动
+2026-07-10 08:42:25,740 - system - INFO - 已启用客户端证书验证
+2026-07-10 08:49:52,879 - system - INFO - 心跳检测线程已启动
+2026-07-10 08:49:52,882 - system - INFO - 已启用客户端证书验证

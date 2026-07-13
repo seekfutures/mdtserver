@@ -1,0 +1,9 @@
+Flask>=2.2,<4
+PyJWT>=2.8,<3
+Werkzeug>=2.2,<4
+oracledb>=2.0,<3
+cryptography>=41,<45
+business-rules>=1.1,<2
+PyQt6>=6.6,<7
+PyQt6-Frameless-Window>=0.3,<1
+PyQt6-Fluent-Widgets>=1.5,<2

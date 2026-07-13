@@ -1,0 +1,20 @@
+2026-07-09 10:46:53,339 - logger_system - ERROR - Database error during patient query: ORA-01861: 文字与格式字符串不匹配
+Help: https://docs.oracle.com/error-help/db/ora-01861/
+2026-07-09 10:49:36,940 - logger_system - ERROR - Database error during patient query: ORA-01861: 文字与格式字符串不匹配
+Help: https://docs.oracle.com/error-help/db/ora-01861/
+2026-07-09 10:53:25,308 - logger_system - ERROR - Database error during patient query: ORA-01861: 文字与格式字符串不匹配
+Help: https://docs.oracle.com/error-help/db/ora-01861/
+2026-07-09 11:00:27,410 - logger_system - ERROR - Database error during panorama query: ORA-00904: "GH_DETP_NAME": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-09 11:05:12,606 - logger_system - ERROR - Database error during panorama query: ORA-00904: "EXAMETHOD": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-09 13:07:32,822 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=wo9B0m6VPxlaLKcxpOJBYA==).
+timed out
+2026-07-09 13:08:10,625 - logger_system - ERROR - Database error during panorama query: ORA-01722: 无效数字
+Help: https://docs.oracle.com/error-help/db/ora-01722/
+2026-07-09 19:07:49,519 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=ekjlH9XAYYkfTEJJoTsjtA==).
+[Errno 64] Host is down
+2026-07-09 19:08:27,105 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=DFd5pLOJRzOPsetPCQ2GaQ==).
+timed out
+2026-07-09 19:08:27,572 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=bE2B0XairtEhdoBlD8Vo0Q==).
+[Errno 64] Host is down

@@ -1,0 +1,14 @@
+2026-06-26 13:41:46,997 - logger_system - ERROR - Database error during MDT validation: ORA-00904: "MATERIAL_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-26 13:59:36,425 - logger_system - ERROR - Database error during MDT validation: ORA-00904: "MATERIAL_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-26 13:59:39,585 - logger_system - ERROR - Database error during MDT validation: ORA-00904: "MATERIAL_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-26 14:07:54,689 - logger_system - ERROR - Database error during MDT validation: ORA-00904: "MATERIAL_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-26 14:08:00,865 - logger_system - ERROR - Database error during MDT validation: ORA-00904: "MATERIAL_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-26 15:17:12,846 - logger_system - ERROR - Database error during MDT validation: ORA-00904: "MATERIAL_TYPE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-06-26 15:18:09,003 - logger_system - ERROR - Database error during MDT submit: ORA-00942: 表或视图不存在
+Help: https://docs.oracle.com/error-help/db/ora-00942/

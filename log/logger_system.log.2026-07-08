@@ -1,0 +1,11 @@
+2026-07-08 09:52:41,779 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=Em8Mae9yzyZIXv/MvrezFQ==).
+[Errno 64] Host is down
+2026-07-08 13:43:26,995 - logger_system - ERROR - Database error during MDT validation: 'conditions'
+2026-07-08 13:44:20,921 - logger_system - ERROR - Database error during MDT validation: 'conditions'
+2026-07-08 13:45:34,054 - logger_system - ERROR - Database error during MDT validation: 'conditions'
+2026-07-08 13:51:29,827 - logger_system - ERROR - Database error during MDT validation: 'conditions'
+2026-07-08 13:53:50,516 - logger_system - ERROR - Database error during MDT validation: 'conditions'
+2026-07-08 14:06:59,979 - logger_system - ERROR - Database error during MDT validation: ORA-00904: "LOGI": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-08 14:07:54,431 - logger_system - ERROR - Database error during MDT validation: ORA-00904: "LOGI": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/

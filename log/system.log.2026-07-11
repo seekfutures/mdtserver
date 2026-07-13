@@ -1,0 +1,17 @@
+2026-07-11 08:18:18,361 - system - INFO - 心跳检测线程已启动
+2026-07-11 08:18:18,366 - system - INFO - 已启用客户端证书验证
+2026-07-11 08:18:18,366 - system - ERROR - 服务器错误: [Errno 48] Address already in use
+2026-07-11 08:18:48,850 - system - INFO - 心跳检测线程已启动
+2026-07-11 08:18:48,854 - system - INFO - 已启用客户端证书验证
+2026-07-11 08:18:48,854 - system - ERROR - 服务器错误: [Errno 48] Address already in use
+2026-07-11 08:18:53,242 - system - INFO - 心跳检测线程已启动
+2026-07-11 08:18:53,243 - system - INFO - 已启用客户端证书验证
+2026-07-11 08:18:53,244 - system - ERROR - 服务器错误: [Errno 48] Address already in use
+2026-07-11 08:18:59,108 - system - INFO - 心跳检测线程已启动
+2026-07-11 08:18:59,110 - system - INFO - 已启用客户端证书验证
+2026-07-11 08:18:59,110 - system - ERROR - 服务器错误: [Errno 48] Address already in use
+2026-07-11 08:19:28,998 - system - INFO - 心跳检测线程已启动
+2026-07-11 08:19:29,001 - system - INFO - 已启用客户端证书验证
+2026-07-11 08:19:29,002 - system - ERROR - 服务器错误: [Errno 48] Address already in use
+2026-07-11 08:22:07,051 - system - INFO - 心跳检测线程已启动
+2026-07-11 08:22:07,055 - system - INFO - 已启用客户端证书验证
