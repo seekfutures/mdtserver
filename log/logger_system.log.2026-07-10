@@ -1,0 +1,6 @@
+2026-07-10 08:16:32,963 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=hxXHCtFvP4KB9WI07aPMDg==).
+timed out
+2026-07-10 09:27:21,038 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=1OZtmU4Z7A8DaYh7Y6mAHw==).
+[Errno 64] Host is down
+2026-07-10 09:27:32,012 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=9CIMF+TgswaZoWPoiBByAw==).
+[Errno 64] Host is down

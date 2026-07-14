@@ -101,11 +101,11 @@ class MedicalQualityVariables(BaseVariables):
             and self.ct_days_ago() <= 90
         ) else 0
 
-    @numeric_rule_variable(label="是否有1个月内肿瘤标志物报告")
+    @numeric_rule_variable(label="是否有3个月内肿瘤标志物报告")
     def has_recent_tumor_markers(self):
         if "has_recent_tumor_markers" in self.data:
             return as_bool_int(self.data.get("has_recent_tumor_markers"))
-        return 1 if self.has_tumor_markers() and self.lab_days_ago() <= 30 else 0
+        return 1 if self.has_tumor_markers() and self.lab_days_ago() <= 90 else 0
 
     @numeric_rule_variable(label="是否有历史影像对比")
     def has_history_compare(self):
@@ -187,7 +187,7 @@ def build_patient_rule_facts(patient, diagnoses, pacs_reports, lis_items):
         and facts["ct_days_ago"] <= 90
     ) else 0
     facts["has_recent_tumor_markers"] = 1 if (
-        facts["has_tumor_markers"] and facts["lab_days_ago"] <= 30
+        facts["has_tumor_markers"] and facts["lab_days_ago"] <= 90
     ) else 0
     facts["has_history_compare"] = facts["has_history_ct"]
     facts["diagnosis_text"] = build_diagnosis_text(patient, diagnoses)
@@ -199,8 +199,9 @@ def evaluate_admission_rules(rules, facts):
     if run_all is None:
         raise RuntimeError("缺少 business-rules 依赖，请先安装 requirements.txt")
     normalized_facts = dict(facts or {})
-    print("给规则引擎的数据",normalized_facts)
     business_rules = build_business_rule_list(rules)
+
+
     result = {
         "action_type": "PASS",
         "messages": [],
@@ -213,7 +214,6 @@ def evaluate_admission_rules(rules, facts):
         defined_actions=QualityControlActions(result),
     )
     triggered_messages = set(result["messages"])
-    print("triggered_messages",triggered_messages)
     for rule in rules or []:
         message = rule_action_message(rule)
         if message in triggered_messages:
@@ -225,7 +225,6 @@ def evaluate_admission_rules(rules, facts):
                     "message": message,
                 }
             )
-    print("规则引擎返回结果",result)
     return result
 
 

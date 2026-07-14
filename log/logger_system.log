@@ -1,6 +1,24 @@
-2026-07-10 08:16:32,963 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=hxXHCtFvP4KB9WI07aPMDg==).
+2026-07-14 09:32:49,726 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=WhP89xJEVKYWvM0dSbEI2Q==).
+DPY-6001: Service "orcl" is not registered with the listener at host "192.168.1.10" port 1521. (Similar to ORA-12514)
+2026-07-14 09:34:20,413 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=l5YcJoFUXCw0y4TvCP0HmA==).
+DPY-6001: Service "orcl" is not registered with the listener at host "192.168.1.10" port 1521. (Similar to ORA-12514)
+2026-07-14 09:37:50,887 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=e3D3rFRcqMih5piD0Z6LTw==).
+DPY-6001: Service "orcl" is not registered with the listener at host "192.168.1.10" port 1521. (Similar to ORA-12514)
+2026-07-14 10:39:26,915 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "SCHEDULED_CONSULTATION_DATE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-14 10:41:07,537 - logger_system - ERROR - Database error during MDT submit: ORA-00904: "SCHEDULED_CONSULTATION_DATE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-14 10:43:31,256 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "REQUESTED_CONSULTATION_DATE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-14 10:43:56,902 - logger_system - ERROR - Database error during MDT submit: ORA-00904: "REQUESTED_CONSULTATION_DATE": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-14 15:01:47,486 - logger_system - ERROR - Database error during MDT validation: ORA-01861: 文字与格式字符串不匹配
+Help: https://docs.oracle.com/error-help/db/ora-01861/
+2026-07-14 18:26:35,482 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=4uenA/X9SNkck5LQTTgQGQ==).
 timed out
-2026-07-10 09:27:21,038 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=1OZtmU4Z7A8DaYh7Y6mAHw==).
-[Errno 64] Host is down
-2026-07-10 09:27:32,012 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=9CIMF+TgswaZoWPoiBByAw==).
-[Errno 64] Host is down
+2026-07-14 18:26:55,488 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=LiAeoY6qahTYYzCzSjZNOQ==).
+timed out
+2026-07-14 19:42:39,707 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=XTD0ViskOBPE1ESWjv1PRA==).
+timed out
+2026-07-14 19:42:59,711 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=h/fqA777dHxZZGv/Z3dZrw==).
+timed out
