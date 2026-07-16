@@ -1,8 +1,0 @@
-2026-07-06 08:25:43,750 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=QPH9B6tSW43DryOYrrnd7w==).
-[Errno 61] Connection refused
-2026-07-06 08:27:24,648 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=TAAnZBr4uHBuW7QybznvMA==).
-DPY-6001: Service "orcl" is not registered with the listener at host "192.168.1.10" port 1521. (Similar to ORA-12514)
-2026-07-06 08:32:05,036 - logger_system - ERROR - Database error during MDT validation: ORA-00904: "MATERIAL_TYPE": 标识符无效
-Help: https://docs.oracle.com/error-help/db/ora-00904/
-2026-07-06 08:34:42,864 - logger_system - ERROR - Database error during MDT validation: ORA-00904: "MATERIAL_TYPE": 标识符无效
-Help: https://docs.oracle.com/error-help/db/ora-00904/

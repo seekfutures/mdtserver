@@ -41,6 +41,24 @@ def clean_text_value(value):
     return "" if text.lower() in {"", "null", "none", "nan"} else text
 
 
+def insert_application_log(cursor, application_id, action_type, action_reason=""):
+    reason = clean_text_value(action_reason)[:512]
+    cursor.execute(
+        """
+        insert into mdt_clinical_application_log
+            (application_id, action_type, action_reason, operation_id, created_at)
+        values
+            (:application_id, :action_type, :action_reason, :operation_id, sysdate)
+        """,
+        {
+            "application_id": application_id,
+            "action_type": action_type,
+            "action_reason": reason,
+            "operation_id": getattr(g, "user_id", ""),
+        },
+    )
+
+
 def fetch_schedule_capacity_for_update(cursor, schedule_id):
     if not schedule_id:
         return 0
@@ -549,23 +567,23 @@ def list_mdt_applications():
     where = ["1 = 1"]
     params = {}
     if scope not in {"lobby", "secretary", "all"}:
-        where.append("applicant_id = :applicant_id")
+        where.append("app.applicant_id = :applicant_id")
         params["applicant_id"] = getattr(g, "user_id", "")
     if keyword:
         where.append(
             """
-            (patient_name like :keyword
-             or patient_id like :keyword
-             or visit_no like :keyword
-             or application_id like :keyword)
+            (app.patient_name like :keyword
+             or app.patient_id like :keyword
+             or app.visit_no like :keyword
+             or app.application_id like :keyword)
             """
         )
         params["keyword"] = f"%{keyword}%"
     if group_id:
-        where.append("group_id = :group_id")
+        where.append("app.group_id = :group_id")
         params["group_id"] = group_id
     if status:
-        where.append("upper(status) = :status")
+        where.append("upper(app.status) = :status")
         params["status"] = status
     elif statuses:
         status_binds = []
@@ -573,46 +591,69 @@ def list_mdt_applications():
             bind = f"status_{index}"
             status_binds.append(f":{bind}")
             params[bind] = value
-        where.append(f"upper(status) in ({', '.join(status_binds)})")
+        where.append(f"upper(app.status) in ({', '.join(status_binds)})")
     if start_date:
-        where.append("created_at >= to_date(:start_date, 'YYYY-MM-DD')")
+        where.append("app.created_at >= to_date(:start_date, 'YYYY-MM-DD')")
         params["start_date"] = start_date
     if end_date:
-        where.append("created_at < to_date(:end_date, 'YYYY-MM-DD') + 1")
+        where.append("app.created_at < to_date(:end_date, 'YYYY-MM-DD') + 1")
         params["end_date"] = end_date
 
     try:
         cursor.execute(
             f"""
-            select application_id,
-                   patient_id,
-                   visit_no,
-                   patient_name,
-                   group_id,
-                   group_name,
-                   applicant_id,
-                   apply_reason,
-                   status,
-                   schedule_id,
-                   appointment_type,
-                   queue_order,
-                   schedule_no,
-                   to_char(requested_consultation_date, 'YYYY-MM-DD') as requested_consultation_date,
-                   to_char(scheduled_consultation_date, 'YYYY-MM-DD') as scheduled_consultation_date,
-                   ct_report_sn,
-                   jy_report_sn,
-                   rule_facts_json,
-                   to_char(rule_checked_at, 'YYYY-MM-DD HH24:MI') as rule_checked_at,
+            select app.application_id,
+                   app.patient_id,
+                   app.visit_no,
+                   app.patient_name,
+                   app.group_id,
+                   app.group_name,
+                   app.applicant_id,
+                   app.apply_reason,
+                   app.status,
+                   app.schedule_id,
+                   app.appointment_type,
+                   app.queue_order,
+                   app.schedule_no,
+                   to_char(app.requested_consultation_date, 'YYYY-MM-DD') as requested_consultation_date,
+                   to_char(app.scheduled_consultation_date, 'YYYY-MM-DD') as scheduled_consultation_date,
+                   app.ct_report_sn,
+                   app.jy_report_sn,
+                   app.rule_facts_json,
+                   to_char(app.rule_checked_at, 'YYYY-MM-DD HH24:MI') as rule_checked_at,
                    case
-                       when schedule_no >= 100 then schedule_no - 100
+                       when app.schedule_no >= 100 then app.schedule_no - 100
                        else null
                    end as waitlist_no,
                    null as waitlist_message,
-                   to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
-                   to_char(updated_at, 'YYYY-MM-DD HH24:MI') as updated_at
-              from mdt_clinical_application
+                   reject_log.action_reason as reject_reason,
+                   reject_log.operation_id as reviewed_by,
+                   to_char(reject_log.created_at, 'YYYY-MM-DD HH24:MI') as rejected_at,
+                   to_char(app.created_at, 'YYYY-MM-DD HH24:MI') as created_at,
+                   to_char(app.updated_at, 'YYYY-MM-DD HH24:MI') as updated_at
+              from mdt_clinical_application app
+              left join (
+                    select application_id,
+                           action_reason,
+                           operation_id,
+                           created_at
+                      from (
+                            select application_id,
+                                   action_reason,
+                                   operation_id,
+                                   created_at,
+                                   row_number() over (
+                                       partition by application_id
+                                       order by created_at desc
+                                   ) as rn
+                              from mdt_clinical_application_log
+                             where upper(action_type) = 'REJECT'
+                           )
+                     where rn = 1
+                   ) reject_log
+                on reject_log.application_id = app.application_id
              where {' and '.join(where)}
-             order by updated_at desc, created_at desc
+             order by app.updated_at desc, app.created_at desc
             """,
             params,
         )
@@ -1031,7 +1072,7 @@ def approve_mdt_application(application_id):
                    updated_at = sysdate
              where application_id = :application_id
                and upper(nvl(status, '-')) in
-                   ('SUBMITTED', 'PENDING_REVIEW', 'WAITLIST')
+                   ('SUBMITTED', 'WAITLIST')
             """,
             {"application_id": application_id},
         )
@@ -1043,6 +1084,7 @@ def approve_mdt_application(application_id):
                 output={"application_id": application_id},
                 status_code=400,
             )
+        insert_application_log(cursor, application_id, "APPROVE", "审核通过")
         db.commit()
         return make_response(
             res_code="ok",
@@ -1103,7 +1145,7 @@ def reject_mdt_application(application_id):
                 status_code=404,
             )
         current_status = str(application.get("status") or "").upper()
-        if current_status in {"DRAFT", "REJECTED", "CANCELLED", "DONE", "FINISHED"}:
+        if current_status in {"DRAFT", "REJECTED", "CANCELLED", "DONE"}:
             db.rollback()
             return make_response(
                 res_code="error",
@@ -1122,9 +1164,11 @@ def reject_mdt_application(application_id):
             """,
             {"application_id": application_id},
         )
+        reject_reason = reason or "秘书审核驳回"
+        insert_application_log(cursor, application_id, "REJECT", reject_reason)
         schedule_id = clean_text_value(application.get("schedule_id"))
         changed_queue = rebalance_application_queue(cursor, schedule_id) if schedule_id else []
-        notifications = build_queue_change_notifications(application, reason, changed_queue)
+        notifications = build_queue_change_notifications(application, reject_reason, changed_queue)
         db.commit()
         return make_response(
             res_code="ok",
@@ -1132,7 +1176,7 @@ def reject_mdt_application(application_id):
             output={
                 "application_id": application_id,
                 "status": "REJECTED",
-                "reason": reason,
+                "reason": reject_reason,
                 "schedule_id": schedule_id,
                 "queue": changed_queue,
                 "notifications": notifications,

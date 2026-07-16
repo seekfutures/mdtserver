@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Blueprint, request
+from flask import Blueprint, g, request
 
 from auth import token_required
 from extensions import get_db
@@ -18,6 +18,28 @@ def parse_date(value, field_name):
         return datetime.datetime.strptime(value, "%Y-%m-%d").date()
     except (TypeError, ValueError) as exc:
         raise ValueError(f"{field_name} must be YYYY-MM-DD") from exc
+
+
+def clean_text_value(value):
+    text = str(value or "").strip()
+    return "" if text.lower() in {"", "null", "none", "nan"} else text
+
+
+def insert_application_log(cursor, application_id, action_type, action_reason=""):
+    cursor.execute(
+        """
+        insert into mdt_clinical_application_log
+            (application_id, action_type, action_reason, operation_id, created_at)
+        values
+            (:application_id, :action_type, :action_reason, :operation_id, sysdate)
+        """,
+        {
+            "application_id": application_id,
+            "action_type": action_type,
+            "action_reason": clean_text_value(action_reason)[:512],
+            "operation_id": getattr(g, "user_id", ""),
+        },
+    )
 
 
 def each_day(start_date, end_date):
@@ -398,9 +420,10 @@ def list_schedules():
         schedule_ids = [item["schedule_id"] for item in items]
         experts_by_schedule = {schedule_id: [] for schedule_id in schedule_ids}
         counts_by_schedule = {
-            schedule_id: {"booked_count": 0, "waitlist_count": 0}
+            schedule_id: {"booked_count": 0, "waitlist_count": 0, "notice_published_count": 0}
             for schedule_id in schedule_ids
         }
+        patients_by_schedule = {schedule_id: [] for schedule_id in schedule_ids}
         if schedule_ids:
             bind_names = [f":id_{index}" for index in range(len(schedule_ids))]
             bind_params = {
@@ -445,7 +468,14 @@ def list_schedules():
                                then 1
                                else 0
                            end
-                       ) as waitlist_count
+                       ) as waitlist_count,
+                       sum(
+                           case
+                               when upper(nvl(status, '-')) = 'WAIT_DISCUSS'
+                               then 1
+                               else 0
+                           end
+                       ) as notice_published_count
                   from mdt_clinical_application
                  where schedule_id in ({", ".join(bind_names)})
                  group by schedule_id
@@ -456,13 +486,40 @@ def list_schedules():
                 counts_by_schedule[row["schedule_id"]] = {
                     "booked_count": int(row.get("booked_count") or 0),
                     "waitlist_count": int(row.get("waitlist_count") or 0),
+                    "notice_published_count": int(row.get("notice_published_count") or 0),
                 }
+
+            cursor.execute(
+                f"""
+                select schedule_id,
+                       application_id,
+                       patient_id,
+                       visit_no,
+                       patient_name,
+                       applicant_id,
+                       appointment_type,
+                       schedule_no,
+                       status
+                  from mdt_clinical_application
+                 where schedule_id in ({", ".join(bind_names)})
+                   and nvl(appointment_type, 'REGULAR') <> 'WAITLIST'
+                   and upper(nvl(status, '-')) in
+                       ('APPROVED', 'WAIT_DISCUSS')
+                 order by schedule_id, nvl(schedule_no, queue_order), created_at, application_id
+                """,
+                bind_params,
+            )
+            for row in rows_to_dicts(cursor, cursor.fetchall()):
+                patients_by_schedule.setdefault(row["schedule_id"], []).append(row)
 
         for item in items:
             item["experts"] = experts_by_schedule.get(item["schedule_id"], [])
             counts = counts_by_schedule.get(item["schedule_id"], {})
             item["booked_count"] = counts.get("booked_count", 0)
             item["waitlist_count"] = counts.get("waitlist_count", 0)
+            item["notice_published_count"] = counts.get("notice_published_count", 0)
+            item["notice_published"] = counts.get("notice_published_count", 0) > 0
+            item["patients"] = patients_by_schedule.get(item["schedule_id"], [])
         return make_response(
             res_code="ok",
             res_message="查询成功",
@@ -474,6 +531,188 @@ def list_schedules():
         return make_response(
             res_code="error",
             res_message="排班查询失败",
+            output=str(exc),
+            status_code=500,
+        )
+
+
+def discussion_time_range(schedule, order):
+    try:
+        start_time = datetime.datetime.strptime(str(schedule.get("start_time") or ""), "%H:%M").time()
+    except ValueError:
+        start_time = datetime.time(hour=14, minute=0)
+    start_minutes = start_time.hour * 60 + start_time.minute + (order - 1) * 20
+    end_minutes = start_minutes + 20
+    return (
+        f"{start_minutes // 60:02d}:{start_minutes % 60:02d}",
+        f"{end_minutes // 60:02d}:{end_minutes % 60:02d}",
+    )
+
+
+def build_meeting_notice(schedule, application, order):
+    start_text, end_text = discussion_time_range(schedule, order)
+    meeting_date = schedule.get("schedule_date") or "本期"
+    meeting_name = schedule.get("shift_name") or f"{schedule.get('group_name') or 'MDT'}会议"
+    patient_name = application.get("patient_name") or "患者"
+    doctor_name = application.get("applicant_id") or "申请"
+    message = (
+        "【MDT会诊中心】\n"
+        f"尊敬的 {doctor_name} 医生，{meeting_date} 的 {meeting_name} 已排定。"
+        f"您申请的患者 {patient_name} 安排在第 {order} 顺位进行讨论。\n"
+        f"预计讨论时间：{start_text} - {end_text}\n"
+        "会议地点：MDT会议室 / 线上会议\n"
+        "请您携带相关病历材料，提前 10 分钟到达会场准备汇报。"
+    )
+    return {
+        "type": "MEETING_NOTICE",
+        "application_id": application.get("application_id"),
+        "patient": patient_name,
+        "message": message,
+    }
+
+
+def build_waitlist_failed_notice(schedule, application):
+    meeting_name = schedule.get("shift_name") or f"{schedule.get('group_name') or 'MDT'}会议"
+    patient_name = application.get("patient_name") or "患者"
+    doctor_name = application.get("applicant_id") or "申请"
+    message = (
+        "【MDT会诊中心】\n"
+        f"尊敬的 {doctor_name} 医生，因本期号源已满，您为患者 {patient_name} "
+        f"申请的 {meeting_name} 未能排入今日讨论。\n"
+        "考虑到患者病情的时效性，系统已将该申请退回至您的“我的申请”列表中。"
+        "您可以重新预约后续场次。"
+    )
+    return {
+        "type": "WAITLIST_FAILED",
+        "application_id": application.get("application_id"),
+        "patient": patient_name,
+        "message": message,
+    }
+
+
+@bp.route("/schedules/<schedule_id>/publish-notices", methods=["POST"])
+@token_required
+def publish_schedule_notices(schedule_id):
+    """Publish meeting notices and finalize regular/waitlist application statuses."""
+    db, cursor = get_db()
+    schedule_id = (schedule_id or "").strip()
+    if not schedule_id:
+        return make_response(
+            res_code="error",
+            res_message="参数错误",
+            output="Missing schedule_id",
+            status_code=400,
+        )
+    try:
+        cursor.execute(
+            """
+            select schedule_id,
+                   group_name,
+                   shift_name,
+                   to_char(schedule_date, 'YYYY-MM-DD') as schedule_date,
+                   start_time,
+                   end_time,
+                   capacity
+              from mdt_schedule
+             where schedule_id = :schedule_id
+             for update
+            """,
+            {"schedule_id": schedule_id},
+        )
+        schedule_rows = rows_to_dicts(cursor, cursor.fetchall())
+        if not schedule_rows:
+            db.rollback()
+            return make_response(
+                res_code="error",
+                res_message="排班不存在",
+                output={"schedule_id": schedule_id},
+                status_code=404,
+            )
+        schedule = schedule_rows[0]
+        capacity = int(schedule.get("capacity") or 0) or 4
+
+        cursor.execute(
+            """
+            select application_id,
+                   patient_name,
+                   applicant_id,
+                   appointment_type,
+                   schedule_no,
+                   status
+              from mdt_clinical_application
+             where schedule_id = :schedule_id
+               and upper(nvl(status, '-')) in
+                   ('APPROVED', 'SUBMITTED', 'WAITLIST')
+             order by nvl(schedule_no, queue_order), created_at, application_id
+             for update
+            """,
+            {"schedule_id": schedule_id},
+        )
+        applications = rows_to_dicts(cursor, cursor.fetchall())
+        regular_items = []
+        waitlist_items = []
+        for application in applications:
+            try:
+                schedule_no = int(float(application.get("schedule_no")))
+            except (TypeError, ValueError):
+                schedule_no = 999999
+            is_waitlist = (
+                str(application.get("appointment_type") or "").upper() == "WAITLIST"
+                or schedule_no >= 100
+                or len(regular_items) >= capacity
+            )
+            if is_waitlist:
+                waitlist_items.append(application)
+            else:
+                regular_items.append(application)
+
+        notifications = []
+        for index, application in enumerate(regular_items, start=1):
+            cursor.execute(
+                """
+                update mdt_clinical_application
+                   set status = 'WAIT_DISCUSS',
+                       updated_at = sysdate
+                 where application_id = :application_id
+                """,
+                {"application_id": application["application_id"]},
+            )
+            reason = "会议通知已发布，申请进入上会中"
+            insert_application_log(cursor, application["application_id"], "PUBLISH_NOTICE", reason)
+            notifications.append(build_meeting_notice(schedule, application, index))
+
+        for application in waitlist_items:
+            cursor.execute(
+                """
+                update mdt_clinical_application
+                   set status = 'WAITLIST_FAILED',
+                       updated_at = sysdate
+                 where application_id = :application_id
+                """,
+                {"application_id": application["application_id"]},
+            )
+            reason = "本期号源已满，候补未能进入本期讨论"
+            insert_application_log(cursor, application["application_id"], "WAITLIST_FAILED", reason)
+            notifications.append(build_waitlist_failed_notice(schedule, application))
+
+        db.commit()
+        return make_response(
+            res_code="ok",
+            res_message="会议通知已发布",
+            output={
+                "schedule_id": schedule_id,
+                "wait_discuss_count": len(regular_items),
+                "waitlist_failed_count": len(waitlist_items),
+                "notifications": notifications,
+            },
+            status_code=200,
+        )
+    except Exception as exc:
+        db.rollback()
+        logger_system.error(f"Database error during schedule notice publish: {str(exc)}")
+        return make_response(
+            res_code="error",
+            res_message="会议通知发布失败",
             output=str(exc),
             status_code=500,
         )

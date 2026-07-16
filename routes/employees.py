@@ -1,3 +1,6 @@
+import base64
+import json
+
 from flask import Blueprint, g, request
 from werkzeug.security import generate_password_hash
 
@@ -447,6 +450,172 @@ def list_users():
         return make_response(
             res_code="error",
             res_message="成员查询失败",
+            output=str(exc),
+            status_code=500,
+        )
+
+
+
+
+@bp.route("/employee-face-binding", methods=["GET"])
+@token_required
+def get_employee_face_binding_status():
+    """Return whether a doctor already has bound face data."""
+    _db, cursor = get_db()
+    doctor_id = str(request.args.get("doctor_id") or g.user_id or "").strip()
+    if not doctor_id:
+        return make_response(
+            res_code="error",
+            res_message="参数错误",
+            output="Missing doctor_id",
+            status_code=400,
+        )
+
+    try:
+        cursor.execute(
+            """
+            select user_id,
+                   dbms_lob.getlength(face_token) as face_token_length,
+                   dbms_lob.getlength(avatar_base64) as avatar_size,
+                   avatar_base64
+              from mdt_a_employee_mi_image
+             where user_id = :user_id
+               and face_token is not null
+               and avatar_base64 is not null
+            """,
+            {"user_id": doctor_id},
+        )
+        row = cursor.fetchone()
+        if not row:
+            return make_response(
+                res_code="ok",
+                res_message="查询成功",
+                output={"doctor_id": doctor_id, "bound": False},
+                status_code=200,
+            )
+        avatar_blob = row[3]
+        avatar_bytes = avatar_blob.read() if hasattr(avatar_blob, "read") else avatar_blob
+        avatar_base64 = base64.b64encode(avatar_bytes or b"").decode("ascii")
+        return make_response(
+            res_code="ok",
+            res_message="查询成功",
+            output={
+                "doctor_id": row[0],
+                "bound": True,
+                "face_token_length": row[1],
+                "avatar_size": row[2],
+                "avatar_base64": "data:image/jpeg;base64," + avatar_base64,
+            },
+            status_code=200,
+        )
+    except Exception as exc:
+        logger_system.error(f"Database error during face binding status query: {str(exc)}")
+        return make_response(
+            res_code="error",
+            res_message="人脸绑定状态查询失败",
+            output=str(exc),
+            status_code=500,
+        )
+
+
+@bp.route("/employee-face-binding", methods=["POST"])
+@token_required
+def save_employee_face_binding():
+    """Save face token and small avatar for doctor check-in."""
+    db, cursor = get_db()
+    data = request.get_json(silent=True) or {}
+
+    doctor_id = str(data.get("doctor_id") or data.get("user_id") or "").strip()
+    face_token = data.get("face_token")
+    avatar_base64 = str(data.get("avatar_base64") or "").strip()
+
+    if not doctor_id:
+        return make_response(
+            res_code="error",
+            res_message="参数错误",
+            output="Missing doctor_id",
+            status_code=400,
+        )
+    if not isinstance(face_token, list) or len(face_token) != 128:
+        return make_response(
+            res_code="error",
+            res_message="参数错误",
+            output="face_token must be a 128-dimension list",
+            status_code=400,
+        )
+    try:
+        normalized_token = [float(value) for value in face_token]
+    except (TypeError, ValueError) as exc:
+        return make_response(
+            res_code="error",
+            res_message="参数错误",
+            output=f"face_token contains non-numeric value: {exc}",
+            status_code=400,
+        )
+
+    if "," in avatar_base64:
+        avatar_base64 = avatar_base64.split(",", 1)[1]
+    try:
+        avatar_bytes = base64.b64decode(avatar_base64, validate=True)
+    except Exception as exc:
+        return make_response(
+            res_code="error",
+            res_message="参数错误",
+            output=f"avatar_base64 is invalid: {exc}",
+            status_code=400,
+        )
+    if len(avatar_bytes) > 10 * 1024:
+        return make_response(
+            res_code="error",
+            res_message="参数错误",
+            output="avatar_base64 must be compressed to 10KB or less",
+            status_code=400,
+        )
+
+    try:
+        cursor.execute(
+            "select count(1) from mdt_a_employee_mi where user_id = :user_id",
+            {"user_id": doctor_id},
+        )
+        if cursor.fetchone()[0] == 0:
+            return make_response(
+                res_code="error",
+                res_message="用户不存在",
+                output=f"doctor_id {doctor_id} does not exist",
+                status_code=404,
+            )
+
+        token_text = json.dumps(normalized_token, ensure_ascii=False, separators=(",", ":"))
+        cursor.execute(
+            "delete from mdt_a_employee_mi_image where user_id = :user_id",
+            {"user_id": doctor_id},
+        )
+        cursor.execute(
+            """
+            insert into mdt_a_employee_mi_image
+                (user_id, face_token, avatar_base64)
+            values
+                (:user_id, :face_token, :avatar_base64)
+            """,
+            {
+                "user_id": doctor_id,
+                "face_token": token_text,
+                "avatar_base64": avatar_bytes,
+            },
+        )
+        db.commit()
+        return make_response(
+            res_code="ok",
+            res_message="人脸绑定保存成功",
+            output={"doctor_id": doctor_id, "avatar_size": len(avatar_bytes)},
+            status_code=200,
+        )
+    except Exception as exc:
+        db.rollback()
+        logger_system.error(f"Database error during face binding save: {str(exc)}")
+        return make_response(
+            res_code="error",
+            res_message="人脸绑定保存失败",
             output=str(exc),
             status_code=500,
         )

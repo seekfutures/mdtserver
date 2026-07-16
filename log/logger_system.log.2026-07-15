@@ -1,0 +1,22 @@
+2026-07-15 09:16:03,890 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "OPERATION_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-15 09:16:10,737 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "OPERATION_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-15 09:16:13,104 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "OPERATION_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-15 09:16:21,805 - logger_system - ERROR - Database error during MDT application query: ORA-00904: "OPERATION_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-15 09:30:54,653 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=ndfa/e2B+TO/PIC4eaHa3Q==).
+timed out
+2026-07-15 09:32:55,874 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=ZxLGHqFWL6sKUSbQyWYzjw==).
+DPY-6001: Service "orcl" is not registered with the listener at host "192.168.1.10" port 1521. (Similar to ORA-12514)
+2026-07-15 09:34:54,082 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=z8ZPnw88EecloQi16308yg==).
+DPY-6001: Service "orcl" is not registered with the listener at host "192.168.1.10" port 1521. (Similar to ORA-12514)
+2026-07-15 10:27:48,485 - logger_system - ERROR - Database error during MDT application approve: ORA-00904: "OPERATION_ID": 标识符无效
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+2026-07-15 15:12:50,200 - logger_system - ERROR - Database error during MDT application query: DPY-4011: the database or network closed the connection
+[Errno 54] Connection reset by peer
+Help: https://python-oracledb.readthedocs.io/en/latest/user_guide/troubleshooting.html#dpy-4011
+2026-07-15 15:13:03,989 - logger_system - ERROR - Database error during login: DPY-4011: the database or network closed the connection
+[Errno 54] Connection reset by peer
+Help: https://python-oracledb.readthedocs.io/en/latest/user_guide/troubleshooting.html#dpy-4011
