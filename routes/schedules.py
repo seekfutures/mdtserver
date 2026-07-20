@@ -596,6 +596,12 @@ def publish_schedule_notices(schedule_id):
     """Publish meeting notices and finalize regular/waitlist application statuses."""
     db, cursor = get_db()
     schedule_id = (schedule_id or "").strip()
+    data = request.get_json(silent=True) or {}
+    selected_application_ids = [
+        clean_text_value(value)
+        for value in data.get("application_ids") or []
+        if clean_text_value(value)
+    ]
     if not schedule_id:
         return make_response(
             res_code="error",
@@ -631,8 +637,18 @@ def publish_schedule_notices(schedule_id):
         schedule = schedule_rows[0]
         capacity = int(schedule.get("capacity") or 0) or 4
 
+        bind_params = {"schedule_id": schedule_id}
+        application_filter_sql = ""
+        if selected_application_ids:
+            bind_names = []
+            for index, application_id in enumerate(selected_application_ids):
+                bind_name = f"application_id_{index}"
+                bind_names.append(f":{bind_name}")
+                bind_params[bind_name] = application_id
+            application_filter_sql = f"and application_id in ({', '.join(bind_names)})"
+
         cursor.execute(
-            """
+            f"""
             select application_id,
                    patient_name,
                    applicant_id,
@@ -643,12 +659,32 @@ def publish_schedule_notices(schedule_id):
              where schedule_id = :schedule_id
                and upper(nvl(status, '-')) in
                    ('APPROVED', 'SUBMITTED', 'WAITLIST')
+               {application_filter_sql}
              order by nvl(schedule_no, queue_order), created_at, application_id
              for update
             """,
-            {"schedule_id": schedule_id},
+            bind_params,
         )
         applications = rows_to_dicts(cursor, cursor.fetchall())
+        if selected_application_ids and not applications:
+            db.rollback()
+            return make_response(
+                res_code="error",
+                res_message="会议通知发布失败",
+                output="所选患者不在当前排班或状态不可发布",
+                status_code=400,
+            )
+        if selected_application_ids:
+            order_by_id = {
+                application_id: index
+                for index, application_id in enumerate(selected_application_ids)
+            }
+            applications.sort(
+                key=lambda item: order_by_id.get(
+                    clean_text_value(item.get("application_id")),
+                    len(order_by_id),
+                )
+            )
         regular_items = []
         waitlist_items = []
         for application in applications:

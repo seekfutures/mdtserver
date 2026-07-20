@@ -1,9 +1,0 @@
-2026-07-07 18:45:23,712 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=YvFhn35p33gHHvuk02LA5g==).
-[Errno 64] Host is down
-2026-07-07 18:46:05,917 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=i6kHbB+BiGReEXWssSMtTQ==).
-DPY-6001: Service "orcl" is not registered with the listener at host "192.168.1.10" port 1521. (Similar to ORA-12514)
-2026-07-07 18:46:21,682 - logger_system - ERROR - DPY-6005: cannot connect to database (CONNECTION_ID=oYuiMTbZLPWhHwnafnV8EA==).
-DPY-6001: Service "orcl" is not registered with the listener at host "192.168.1.10" port 1521. (Similar to ORA-12514)
-2026-07-07 20:18:16,750 - logger_system - ERROR - Database error during disease group query: Object of type LOB is not JSON serializable
-2026-07-07 20:18:59,070 - logger_system - ERROR - Database error during disease group query: Object of type LOB is not JSON serializable
-2026-07-07 20:19:02,215 - logger_system - ERROR - Database error during disease group query: Object of type LOB is not JSON serializable
